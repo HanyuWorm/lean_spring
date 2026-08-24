@@ -1,0 +1,143 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.debezium.examples</groupId>
+        <artifactId>debezium-examples-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>io.debezium.examples.camel</groupId>
+    <artifactId>component-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Parent for Q&amp;A Camel Debezium example</name>
+
+    <properties>
+        <database.hostname>qa-db</database.hostname>
+        <database.port>5432</database.port>
+        <database.user>postgres</database.user>
+        <database.password>postgres</database.password>
+        <database.dbname>postgres</database.dbname>
+        <database.schema>inventory</database.schema>
+
+        <smtp.hostname>localhost</smtp.hostname>
+        <smtp.port>1025</smtp.port>
+        <smtp.ui>8025</smtp.ui>
+
+        <mysql.init.timeout>30000</mysql.init.timeout>
+
+        <version.camel>4.0.0-M3</version.camel>
+        <version.plugin.docker>0.31.0</version.plugin.docker>
+        <version.plugin.shade>3.2.1</version.plugin.shade>
+    </properties>
+
+    <modules>
+        <module>qa-app</module>
+        <module>qa-camel</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${version.quarkus}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-bom</artifactId>
+                <version>${version.camel}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.6.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${version.plugin.docker}</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-maven-plugin</artifactId>
+                    <version>${version.quarkus}</version>
+                    <configuration>
+                        <systemProperties>
+                            <!--
+                                Allow ByteBuddy to operate on JDK versions it does not yet officially support
+                                (the Quarkus/ByteBuddy version pulled in here predates official Java 21 support).
+                                Remove once the Quarkus BOM upgrades to a ByteBuddy release that supports the
+                                target JDK natively.
+                            -->
+                            <net.bytebuddy.experimental>true</net.bytebuddy.experimental>
+                        </systemProperties>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${version.plugin.shade}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <watchInterval>500</watchInterval>
+                    <logDate>default</logDate>
+                    <verbose>true</verbose>
+                    <imagePullPolicy>IfNotPresent</imagePullPolicy>
+                    <images>
+                        <image>
+                            <name>mailhog/mailhog</name>
+                            <run>
+                                <namingStrategy>none</namingStrategy>
+                                <ports>
+                                    <port>${smtp.port}:1025</port>
+                                    <port>${smtp.ui}:8025</port>
+                                </ports>
+                                <log>
+                                    <prefix>email</prefix>
+                                    <enabled>true</enabled>
+                                    <color>yellow</color>
+                                </log>
+                            </run>
+                        </image>
+                        <image>
+                            <name>quay.io/debezium/example-postgres:${version.debezium}</name>
+                            <run>
+                                <namingStrategy>none</namingStrategy>
+                                <env>
+                                    <POSTGRES_USER>postgres</POSTGRES_USER>
+                                    <POSTGRES_PASSWORD>postgres</POSTGRES_PASSWORD>
+                                </env>
+                                <ports>
+                                    <port>${database.port}:5432</port>
+                                </ports>
+                                <log>
+                                    <prefix>postgres</prefix>
+                                    <enabled>true</enabled>
+                                    <color>white</color>
+                                </log>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

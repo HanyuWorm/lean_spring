@@ -1,0 +1,132 @@
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.47
+    ports:
+     - 4317:4317
+     - 16686:16686
+    environment:
+     - COLLECTOR_OTLP_ENABLED=true
+  
+  kafka:
+    image: quay.io/debezium/kafka:${DEBEZIUM_VERSION}
+    ports:
+      - 9092:9092
+      - 9093:9093
+    environment:
+      - CLUSTER_ID=oh-sxaDRTcyAr6pFRbXyzA
+      - NODE_ID=1
+      - NODE_ROLE=combined
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_LISTENERS=PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+
+  order-db:
+    image: quay.io/debezium/example-postgres:${DEBEZIUM_VERSION}
+    ports:
+     - 5433:5432
+    healthcheck:
+      test: "pg_isready -U postgresuser -d orderdb"
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    environment:
+     - POSTGRES_USER=postgresuser
+     - POSTGRES_PASSWORD=postgrespw
+     - POSTGRES_DB=orderdb
+     - PGPASSWORD=postgrespw
+
+  shipment-db:
+    image: quay.io/debezium/example-postgres:${DEBEZIUM_VERSION}
+    ports:
+      - 5434:5432
+    healthcheck:
+      test: "pg_isready -U postgresuser -d shipmentdb"
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    environment:
+      - POSTGRES_USER=postgresuser
+      - POSTGRES_PASSWORD=postgrespw
+      - POSTGRES_DB=shipmentdb
+      - PGPASSWORD=postgrespw
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+
+  connect:
+    image: quay.io/debezium/connect:${DEBEZIUM_VERSION}
+    ports:
+     - 8083:8083
+    depends_on:
+     - kafka
+     - order-db
+    environment:
+     - BOOTSTRAP_SERVERS=kafka:9092
+     - GROUP_ID=connect
+     - CONFIG_STORAGE_TOPIC=connect-configs
+     - OFFSET_STORAGE_TOPIC=connect-offsets
+     - STATUS_STORAGE_TOPIC=connect-status
+     - CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE=false
+     - CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE=false
+     - ENABLE_OTEL=true
+     - OTEL_SERVICE_NAME=kafka-connect
+     - OTEL_TRACES_EXPORTER=otlp
+     - OTEL_METRICS_EXPORTER=none
+     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+     - OTEL_TRACES_SAMPLER=always_on
+
+  order-service:
+    image: debezium-examples/outbox-order-service:${DEBEZIUM_VERSION}
+    build:
+      context: order-service
+      dockerfile: src/main/docker/Dockerfile.${QUARKUS_BUILD:-jvm}
+    ports:
+     - 8080:8080
+    links:
+     - kafka
+     - order-db
+     - jaeger
+    environment:
+     - QUARKUS_DEBEZIUM_OUTBOX_REMOVE_AFTER_INSERT=true
+     - QUARKUS_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://jaeger:4317
+     - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://order-db:5432/orderdb?currentSchema=inventory
+     - QUARKUS_DATASOURCE_USERNAME=postgresuser
+     - QUARKUS_DATASOURCE_PASSWORD=postgrespw
+    depends_on:
+      order-db:
+        condition: service_healthy
+      connect:
+        condition: service_started
+      kafka:
+        condition: service_started
+      jaeger:
+        condition: service_started
+  
+  shipment-service:
+    image: debezium-examples/outbox-shipment-service:${DEBEZIUM_VERSION}
+    build:
+      context: shipment-service
+      dockerfile: src/main/docker/Dockerfile.${QUARKUS_BUILD:-jvm}
+    links:
+     - kafka
+     - shipment-db
+     - jaeger
+    environment:
+      - QUARKUS_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://jaeger:4317
+    depends_on:
+      shipment-db:
+        condition: service_healthy
+      connect:
+        condition: service_started
+      kafka:
+        condition: service_started
+      jaeger:
+        condition: service_started

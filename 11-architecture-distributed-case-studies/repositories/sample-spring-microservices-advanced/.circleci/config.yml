@@ -1,0 +1,50 @@
+version: 2.1
+
+jobs:
+  analyze:
+    docker:
+      - image: 'cimg/openjdk:25.0.4'
+    steps:
+      - checkout
+      - git-shallow-clone/checkout_advanced:
+          clone_options: '--filter=blob:none'
+      - run:
+          name: "Git fetch"
+          command: git fetch --no-filter --refetch
+      - run:
+          name: Analyze on SonarCloud
+          command: mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DskipTests
+  test:
+    executor: machine_executor_amd64
+    steps:
+      - checkout
+      - run:
+          name: Install OpenJDK 25
+          command: |
+            java -version
+            sudo apt-get update && sudo apt-get install openjdk-25-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-25-openjdk-amd64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-25-openjdk-amd64/bin/javac
+            java -version
+            export JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64
+      - run:
+          name: Maven Tests
+          command: mvn test
+
+executors:
+  machine_executor_amd64:
+    machine:
+      image: ubuntu-2204:current
+    environment:
+      architecture: "amd64"
+      platform: "linux/amd64"
+
+orbs:
+  git-shallow-clone: guitarrapc/git-shallow-clone@2.8.0
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - test
+      - analyze:
+          context: SonarCloud

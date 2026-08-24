@@ -1,0 +1,34 @@
+services:
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+     - 8025:8025
+
+  qa-db:
+    image: quay.io/debezium/example-postgres:${DEBEZIUM_VERSION}
+    ports:
+     - 5432:5432
+    environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres
+
+  qa-app:
+    image: debezium-examples/qa-app:${DEBEZIUM_VERSION}
+    build:
+      context: qa-app
+      dockerfile: src/main/docker/Dockerfile.jvm
+    ports:
+     - 8080:8080
+    depends_on:
+     - qa-db
+
+  qa-camel:
+    image: debezium-examples/qa-camel:${DEBEZIUM_VERSION}
+    build:
+      context: qa-camel
+    depends_on:
+     - qa-db
+     - mailhog
+    environment:
+     - JAVA_MAIN_CLASS=io.debezium.examples.camel.pipeline.Runner
+     - JAVA_OPTIONS=-Ddatabase.hostname=qa-db -Ddatabase.port=5432 -Ddatabase.user=postgres -Ddatabase.password=postgres -Ddatabase.dbname=postgres -Ddatabase.schema=inventory -Dsmtp.hostname=mailhog -Dsmtp.port=1025  -Dtwitter.consumerKey=$TWITTER_CONSUMER_KEY -Dtwitter.consumerSecret=$TWITTER_CONSUMER_SECRET -Dtwitter.accessToken=$TWITTER_ACCESS_TOKEN -Dtwitter.accessTokenSecret=$TWITTER_ACCESS_TOKEN_SECRET

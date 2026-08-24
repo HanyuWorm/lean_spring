@@ -1,0 +1,17 @@
+scenario,approach,requests_ok,requests_error,requests_per_second_p50,requests_per_second_p90,requests_per_second_max,latency_millis_min,latency_millis_p50,latency_millis_p90,latency_millis_p99,latency_millis_max,cpu_use_percent_avg,cpu_use_percent_max,ram_use_percent_avg,ram_use_percent_max,heap_use_percent_avg,heap_use_percent_max,garbage_collection_count,garbage_collection_time_millis,platform_threads_avg,platform_threads_max,sockets_avg,sockets_max,network_kib_per_req_avg,network_kib_per_req_max,network_packets_per_req_avg,network_packets_per_req_max
+5k-vus-and-1k-rps-get-movies-call-depth-0,loom-netty,184903,0,1000,1001,1104,100,100,100,101,147,6.65,95.5,31.2,32.3,30.9,58.4,7,273,19,21,4928,5005,4.09,4.67,8.16,14.3
+5k-vus-and-1k-rps-get-movies-call-depth-0,webflux-netty,184902,0,1000,1000,1027,100,100,100,101,145,9.79,87.2,31.0,32.1,31.8,59.5,7,283,23,25,4930,5005,4.56,4.91,16.1,22.0
+5k-vus-and-1k-rps-get-movies-call-depth-1,loom-netty,184899,0,1000,1001,1072,101,101,101,103,151,13.1,91.9,31.5,33.0,32.3,63.4,18,604,19,21,4930,5005,4.98,5.46,16.1,22.3
+5k-vus-and-1k-rps-get-movies-call-depth-1,webflux-netty,184899,0,1000,1001,1133,101,101,101,105,170,18.2,92.4,31.7,33.2,31.3,59.6,18,670,23,25,4931,5006,5.46,6.96,24.1,34.8
+5k-vus-and-1k-rps-get-movies-call-depth-2,loom-netty,184900,0,1000,1001,1199,101,101,101,113,373,17.7,98.2,32.3,33.6,34.9,65.0,26,510,19,21,4932,5007,5.87,6.95,24.1,32.7
+5k-vus-and-1k-rps-get-movies-call-depth-2,webflux-netty,184900,0,1000,1001,1174,101,101,101,113,281,18.6,96.2,32.4,33.6,33.6,63.8,26,485,23,25,4931,5006,6.35,7.20,32.1,40.9
+5k-vus-and-1k-rps-get-movies-call-depth-5,loom-netty,184898,0,1000,1001,1284,102,103,104,798,1710,59.6,99.8,35.8,36.9,58.1,88.2,55,1947,19,21,4932,5006,8.56,14.8,48.0,95.5
+5k-vus-and-1k-rps-get-movies-call-depth-5,webflux-netty,184902,0,1000,1018,1791,101,102,104,910,1581,54.9,99.8,36.3,37.5,60.0,91.6,54,2011,23,25,4931,5006,9.03,14.9,56.2,129
+5k-vus-smooth-spike-get-post-movies-call-depth-0,loom-netty,216958,0,1193,2123,2424,100,101,101,103,457,18.1,93.0,31.0,33.5,33.9,59.9,11,409,19,21,3003,5005,7.49,65.1,9.16,191
+5k-vus-smooth-spike-get-post-movies-call-depth-0,webflux-netty,216757,0,1200,2160,2400,100,101,101,105,459,22.3,98.8,31.2,33.8,31.4,59.9,12,480,23,25,3002,5005,7.99,56.1,17.2,201
+5k-vus-smooth-spike-get-post-movies-call-depth-1,loom-netty,216559,0,1202,2135,2416,101,101,102,115,661,33.2,99,31.5,34.0,31.1,62.2,23,736,19,21,3004,5005,8.37,130,16.8,520
+5k-vus-smooth-spike-get-post-movies-call-depth-1,webflux-netty,216503,0,1192,2153,2371,101,101,102,115,658,34.8,97.8,31.6,34.1,31.7,61.9,23,706,23,25,3004,5005,8.84,78.4,24.6,404
+5k-vus-smooth-spike-get-post-movies-call-depth-2,loom-netty,216467,0,1195,2138,2451,101,102,104,133,701,43.6,93.1,31.6,34.1,30.8,62.4,34,938,19,21,3022,5005,9.26,20,24.6,112
+5k-vus-smooth-spike-get-post-movies-call-depth-2,webflux-netty,216406,0,1181,2135,2587,101,102,105,188,716,44.3,97.3,31.6,34.1,30.8,62.0,34,911,23,25,3016,5005,9.72,17.1,32.3,70
+5k-vus-smooth-spike-get-post-movies-call-depth-5,loom-netty,212632,0,1190,2051,2482,102,109,206,600,1469,67.4,100,31.9,34.4,33.3,65.2,66,1963,19,21,3005,5005,11.9,78.7,48.1,442
+5k-vus-smooth-spike-get-post-movies-call-depth-5,webflux-netty,205693,0,1183,1962,2179,101,117,435,1186,3591,66.1,100,32.2,35.5,34.4,68.4,64,2275,23,25,3022,5005,12.4,48.8,56.5,339

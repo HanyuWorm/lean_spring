@@ -1,0 +1,41 @@
+name: Build [auditlog]
+
+on:
+  push:
+    paths:
+      - 'auditlog/**'
+      - '.github/workflows/auditlog-workflow.yml'
+      - 'scripts/run-example-test.py'
+  pull_request:
+    paths:
+      - 'auditlog/**'
+      - '.github/workflows/auditlog-workflow.yml'
+      - 'scripts/run-example-test.py'
+      - '.env'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build auditlog services
+        run: mvn clean package -DskipTests -f auditlog/pom.xml
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install pyyaml requests
+
+      - name: Run auditlog test
+        run: python scripts/run-example-test.py auditlog

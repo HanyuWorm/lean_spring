@@ -1,0 +1,128 @@
+name: auditlog
+description: Tests Debezium PostgreSQL connector with audit log enrichment via Kafka Streams
+env_file: ../.env
+compose_file: docker-compose.yaml
+
+cleanup:
+  type: docker_compose_down
+  volumes: true
+
+steps:
+  - name: Build all images
+    type: docker_compose_build
+
+  - name: Start all services
+    type: docker_compose_up
+    detach: true
+
+  - name: Wait for Kafka Connect REST API to be ready
+    type: http_wait
+    url: http://localhost:8083/connectors
+    timeout_seconds: 120
+    interval_seconds: 5
+
+  - name: Register Debezium PostgreSQL connector
+    type: http_put
+    url: http://localhost:8083/connectors/inventory-connector/config
+    body_file: register-postgres.json
+    expected_status: [200, 201]
+
+  - name: Wait for connector to be RUNNING
+    type: http_wait
+    url: http://localhost:8083/connectors/inventory-connector/status
+    timeout_seconds: 60
+    interval_seconds: 5
+    expected_json_path: connector.state
+    expected_value: RUNNING
+
+  - name: Wait for vegetables-service to be ready
+    type: http_wait
+    url: http://localhost:8080/vegetables
+    timeout_seconds: 120
+    interval_seconds: 5
+    expected_status: [200, 405]
+
+  - name: Wait for admin-service to be ready
+    type: http_wait
+    url: http://localhost:8085/vegetables
+    timeout_seconds: 60
+    interval_seconds: 5
+    expected_status: 200
+
+  - name: Create a new vegetable record (farmerbob)
+    type: http_post
+    url: http://localhost:8080/vegetables
+    headers:
+      Authorization: "Bearer eyJraWQiOiJqd3Qua2V5IiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJmYXJtZXJib2IiLCJ1cG4iOiJmYXJtZXJib2IiLCJhdXRoX3RpbWUiOjE1NjY0NTgxMTMsImlzcyI6ImZhcm1zaG9wIiwiZ3JvdXBzIjpbImZhcm1lcnMiLCJjdXN0b21lcnMiXSwiZXhwIjo0MTAyNDQ0Nzk5LCJpYXQiOjE1NjY0NTgxMTMsImp0aSI6IjQyIn0.CscbJN8amqKryYvnVO1184J8F67HN2iTEjVN2VOPodcnoeOd7_iQVKUjC3h-ye5apkJjvAsQKrjzlrGCHRfl-n6jC9F7IkOtjoWnJ4wQ9BBo1SAtPw_Czt1I_Ujm-Kb1p5-BWACCBCVVFgYZTWP_laz5JZS7dIvs6VqoNnw7A4VpA6iPfTVfYlNY3u86-k1FvEg_hW-N9Y9RuihMsPuTdpHK5xdjCrJiD0VJ7-0eRQ8RXpycHuHN4xfmV8MqXBYjYSYDOhbnYbdQVbf0YJoFFqfb75my5olN-97ITsi2MS62W_y-RNT0qZrbytqINA3fF3VQsSY6VcaqRAeygrKm_Q"
+      Date: "Mon, 20 Apr 2026 12:00:00 GMT"
+    body:
+      name: "Cucumber"
+      description: "Fresh and crunchy"
+    expected_status: [200, 201, 204]
+
+  - name: Verify enriched message appears in Kafka
+    type: kafka_consume
+    topic: dbserver1.inventory.vegetable.enriched
+    timeout_seconds: 60
+    expected_content: "Cucumber"
+
+  - name: Verify metadata enrichment (user farmerbob)
+    type: kafka_consume
+    topic: dbserver1.inventory.vegetable.enriched
+    timeout_seconds: 30
+    expected_content: "farmerbob"
+
+  - name: Administrate missing events - Create a record bypassing the service
+    type: docker_compose_exec
+    service: vegetables-db
+    command: "psql postgresql://postgresuser:postgrespw@vegetables-db:5432/vegetablesdb -c \"insert into inventory.vegetable (id, description, name) values (nextval('inventory.vegetables_id_seq'), 'Tasty!', 'Banana');\""
+
+  - name: Verify raw anomalous event appears in Kafka
+    type: kafka_consume
+    service: kafka
+    topic: dbserver1.inventory.vegetable
+    expected_content: "Banana"
+    timeout_seconds: 60
+
+  - name: Wait for missing event to appear in admin service
+    type: http_wait
+    url: http://localhost:8085/vegetables
+    timeout_seconds: 120
+    interval_seconds: 5
+    expected_status: 200
+    expected_json_path: 0.id
+    expected_value: "{ANY}"
+    capture_json:
+      MISSING_UUID: "0.id"
+
+  - name: Get list of tasks to provide missing data
+    type: http_wait
+    url: http://localhost:8085/vegetables/${MISSING_UUID}/tasks
+    timeout_seconds: 30
+    interval_seconds: 5
+    expected_status: 200
+    expected_json_path: "0.id"
+    expected_value: "{ANY}"
+    capture_json:
+      TASK_UUID: "0.id"
+
+  - name: Provide missing metadata to the admin service
+    type: http_post
+    url: http://localhost:8085/vegetables/${MISSING_UUID}/auditData/${TASK_UUID}
+    expected_status: [200, 201]
+    body:
+      audit:
+        usecase: "CREATE VEGETABLE"
+        user_name: "farmerjohn"
+
+  - name: Verify enriched message appears in Kafka (from admin resolution)
+    type: kafka_consume
+    topic: dbserver1.inventory.vegetable.enriched
+    timeout_seconds: 60
+    expected_content: "Banana"
+
+  - name: Verify metadata enrichment (user farmerjohn)
+    type: kafka_consume
+    topic: dbserver1.inventory.vegetable.enriched
+    timeout_seconds: 30
+    expected_content: "farmerjohn"

@@ -1,0 +1,24 @@
+ARG KAFKA_VERSION
+ARG DEBEZIUM_VERSION
+
+FROM apache/kafka:${KAFKA_VERSION}
+
+ARG DEBEZIUM_VERSION
+
+USER root
+
+# Install curl (not present by default in Alpine-based apache/kafka image)
+RUN apk add --no-cache curl
+
+# Create plugin directory and download Debezium PostgreSQL connector
+RUN mkdir -p /opt/kafka/plugins && \
+    curl -sfSL https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/${DEBEZIUM_VERSION}/debezium-connector-postgres-${DEBEZIUM_VERSION}-plugin.tar.gz | \
+    tar -xzf - -C /opt/kafka/plugins
+
+# Configure Kafka Connect worker using the stock properties file
+RUN sed -i 's|bootstrap.servers=localhost:9092|bootstrap.servers=kafka-broker:9092|' /opt/kafka/config/connect-distributed.properties && \
+    sed -i 's|#plugin.path=|plugin.path=/opt/kafka/plugins|' /opt/kafka/config/connect-distributed.properties
+
+USER appuser
+
+CMD ["/opt/kafka/bin/connect-distributed.sh", "/opt/kafka/config/connect-distributed.properties"]

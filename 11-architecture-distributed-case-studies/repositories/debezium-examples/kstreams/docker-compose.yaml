@@ -1,0 +1,82 @@
+services:
+  kafka:
+    image: quay.io/debezium/kafka:${DEBEZIUM_VERSION}
+    ports:
+      - 9092:9092
+      - 9093:9093
+    environment:
+      - CLUSTER_ID=oh-sxaDRTcyAr6pFRbXyzA
+      - NODE_ID=1
+      - NODE_ROLE=combined
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_LISTENERS=PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+
+  mysql:
+    image: quay.io/debezium/example-mysql:${DEBEZIUM_VERSION}
+    ports:
+     - 3306:3306
+    environment:
+     - MYSQL_ROOT_PASSWORD=debezium
+     - MYSQL_USER=mysqluser
+     - MYSQL_PASSWORD=mysqlpw
+
+  mongodb:
+    image: mongo:latest
+    ports:
+     - 27017:27017
+
+  connect_source:
+    image: quay.io/debezium/connect:${DEBEZIUM_VERSION}
+    build:
+      context: debezium-mongodb
+    ports:
+     - 8083:8083
+    depends_on:
+     - kafka
+     - mysql
+    environment:
+     - BOOTSTRAP_SERVERS=kafka:9092
+     - GROUP_ID=1
+     - CONFIG_STORAGE_TOPIC=my_source_connect_configs
+     - OFFSET_STORAGE_TOPIC=my_source_connect_offsets
+
+  connect_sink:
+    image: debezium/connect-mongodb:${DEBEZIUM_VERSION}
+    build:
+      context: debezium-mongodb
+    ports:
+     - 8084:8083
+    depends_on:
+     - kafka
+     - mongodb
+    environment:
+     - BOOTSTRAP_SERVERS=kafka:9092
+     - GROUP_ID=2
+     - CONFIG_STORAGE_TOPIC=my_sink_connect_configs
+     - OFFSET_STORAGE_TOPIC=my_sink_connect_offsets
+     - CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE=false
+     - CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE=false
+
+  aggregator:
+    image: debezium/kstreams-aggregator:${DEBEZIUM_VERSION}
+    build:
+      context: poc-ddd-aggregates
+    environment:
+     - JAVA_MAIN_CLASS=io.debezium.examples.aggregation.StreamingAggregatesDDD
+     - PARENT_TOPIC=dbserver1.inventory.customers
+     - CHILDREN_TOPIC=dbserver1.inventory.addresses
+     - BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+     - connect_source
+     - kafka
+    command: >
+      /bin/bash -c "
+        while ! curl -f -s -X GET http://connect_source:8083/connectors/mysql-source;
+        do
+          echo 'Waiting for source connector to be deployed';
+          sleep 1;
+        done;
+        echo 'Source connector deployed!';
+        /opt/poc-ddd-aggregates/run-aggregator.sh
+      "

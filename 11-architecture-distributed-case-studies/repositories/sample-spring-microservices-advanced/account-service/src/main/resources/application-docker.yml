@@ -1,0 +1,12 @@
+server:  
+  port: 8080
+
+spring:
+  mongodb:
+    host: mongo
+    port: 27017
+
+eureka:  
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka/
