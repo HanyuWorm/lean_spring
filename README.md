@@ -6,6 +6,8 @@ Workspace thực hành dành cho senior Java/Spring Boot. Mỗi thư mục là m
 
 Toàn bộ handbook và source demo được xuất bản thành website responsive tại [hanyuworm.github.io/lean_spring](https://hanyuworm.github.io/lean_spring/). Site có tìm kiếm, dark mode, mục lục, syntax highlighting và nút copy code; mỗi push vào `main` tự deploy bằng GitHub Pages. Xem [hướng dẫn preview và publish](website/README.md).
 
+> **Mở nội dung chi tiết:** chọn trực tiếp tên folder trong bảng bên dưới. Trên điện thoại, nhấn biểu tượng menu ở góc trên bên trái để mở toàn bộ cây chương và các trang con.
+
 ## Yêu cầu
 
 - JDK 21
@@ -25,22 +27,24 @@ mvn test
 
 | Thứ tự | Project | Trọng tâm |
 |---:|---|---|
-| 1 | `01-java-patterns` | Strategy, Factory, Chain of Responsibility, Decorator bằng Java thuần |
-| 2 | `02-spring-core-patterns` | DI, strategy registry, proxy/AOP và giới hạn của proxy |
-| 3 | `03-hexagonal-modulith` | Ports & Adapters, package-by-feature, domain event, module verification |
-| 4 | `04-reliable-events` | Transaction boundary, persistent event publication, idempotent listener |
-| 5 | `05-http-resilience` | HTTP Service Client, anti-corruption layer, native retry/concurrency limit |
-| 6 | `06-observability-concurrency` | Micrometer Observation, virtual threads, context propagation |
-| 7 | `07-virtual-threads-system-design` | Virtual threads + H2/Hikari, backpressure và tác động lên system design |
-| 9 | `09-spring-native-patterns-deep-dive` | 8 project chuyên sâu, mỗi Spring-native pattern một project độc lập |
-| 11 | `11-architecture-distributed-case-studies` | 6 upstream case study: Saga/Outbox/flash sale/Kafka/Virtual Threads/Spring Cloud |
-| 12 | `12-spring-memory-management` | JVM/Spring memory, Hibernate, cache, Virtual Threads, container sizing và OOM playbook |
-| 13 | `13-nodejs-backend-nextjs-roadmap` | Node.js/TypeScript backend và Next.js App Router từ nền tảng đến production |
-| 14 | `14-database-sql-nosql-handbook` | SQL/NoSQL, MySQL/PostgreSQL/MongoDB, transaction/index/scale và changelog 2023-2026 |
-| 15 | `15-system-design-security-handbook` | Security architecture cho cloud/no-cloud: identity, API, data, network, supply chain và incident |
-| 16 | `16-aws-gcp-cloud-handbook` | AWS/GCP từ foundations tới landing zone, workload, data, security, DR, FinOps và IaC |
-| 17 | `17-ai-engineering-agentic-development` | AI Engineering, RAG, agent harness, MCP/A2A, eval, security, Spring AI 2 và AI-assisted development |
-| 18 | `18-low-level-design-handbook` | LLD tiếng Việt: object model, SOLID/GRASP, GoF, DDD tactical, state, concurrency, test và Java lab |
+| 1 | [01 — Java Patterns](01-java-patterns/README.md) | Strategy, Factory, Chain of Responsibility, Decorator bằng Java thuần |
+| 2 | [02 — Spring Core Patterns](02-spring-core-patterns/README.md) | DI, strategy registry, proxy/AOP và giới hạn của proxy |
+| 3 | [03 — Hexagonal Modulith](03-hexagonal-modulith/README.md) | Ports & Adapters, package-by-feature, domain event, module verification |
+| 4 | [04 — Reliable Events](04-reliable-events/README.md) | Transaction boundary, persistent event publication, idempotent listener |
+| 5 | [05 — HTTP Resilience](05-http-resilience/README.md) | HTTP Service Client, anti-corruption layer, native retry/concurrency limit |
+| 6 | [06 — Observability & Concurrency](06-observability-concurrency/README.md) | Micrometer Observation, virtual threads, context propagation |
+| 7 | [07 — Virtual Threads & System Design](07-virtual-threads-system-design/README.md) | Virtual threads + H2/Hikari, backpressure và tác động lên system design |
+| 8 | [08 — Senior Java Modern Roadmap](08-senior-java-modern-roadmap/README.md) | Lộ trình Java/Spring hiện đại và Solution Architect với câu hỏi phỏng vấn có đáp án |
+| 9 | [09 — Spring-native Patterns Deep Dive](09-spring-native-patterns-deep-dive/README.md) | 8 project chuyên sâu, mỗi Spring-native pattern một project độc lập |
+| 10 | [10 — Spring Fundamentals Handbook](10-spring-fundamentals-handbook/README.md) | Spring core, annotations, MVC, JPA/Hibernate, cache, testing, security và observability |
+| 11 | [11 — Architecture & Distributed Case Studies](11-architecture-distributed-case-studies/README.md) | 6 upstream case study: Saga/Outbox/flash sale/Kafka/Virtual Threads/Spring Cloud |
+| 12 | [12 — Spring Memory Management](12-spring-memory-management/README.md) | JVM/Spring memory, Hibernate, cache, Virtual Threads, container sizing và OOM playbook |
+| 13 | [13 — Node.js Backend & Next.js Roadmap](13-nodejs-backend-nextjs-roadmap/README.md) | Node.js/TypeScript backend và Next.js App Router từ nền tảng đến production |
+| 14 | [14 — Database SQL/NoSQL Handbook](14-database-sql-nosql-handbook/README.md) | SQL/NoSQL, MySQL/PostgreSQL/MongoDB, transaction/index/scale và changelog 2023-2026 |
+| 15 | [15 — System Design Security Handbook](15-system-design-security-handbook/README.md) | Security architecture cho cloud/no-cloud: identity, API, data, network, supply chain và incident |
+| 16 | [16 — AWS/GCP Cloud Handbook](16-aws-gcp-cloud-handbook/README.md) | AWS/GCP từ foundations tới landing zone, workload, data, security, DR, FinOps và IaC |
+| 17 | [17 — AI Engineering & Agentic Development](17-ai-engineering-agentic-development/README.md) | AI Engineering, RAG, agent harness, MCP/A2A, eval, security, Spring AI 2 và AI-assisted development |
+| 18 | [18 — Low-Level Design Handbook](18-low-level-design-handbook/README.md) | LLD tiếng Việt: object model, SOLID/GRASP, GoF, DDD tactical, state, concurrency, test và Java lab |
 
 Đọc [SPRING_BOOT_DESIGN_PATTERNS.md](SPRING_BOOT_DESIGN_PATTERNS.md) trước, sau đó làm `README.md` và các bài `TODO` trong từng project. Khi migrate hệ thống hiện có, đọc thêm [SPRING_BOOT_3_1_TO_4_1_CHANGES.md](SPRING_BOOT_3_1_TO_4_1_CHANGES.md).
 
