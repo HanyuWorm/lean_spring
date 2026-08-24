@@ -4,7 +4,7 @@
 
 > Trạng thái kiểm chứng ngày 2026-08-24: Spring Boot 4.1.1 đang nằm trong dòng stable của tài liệu chính thức; Spring Framework 7 có native `@Retryable`, `@ConcurrencyLimit`, `RetryTemplate`; `RestTemplate` đã deprecated; null-safety chuyển sang JSpecify. Với Virtual Threads, Spring Boot yêu cầu Java 21+ và khuyến nghị Java 24+ để có trải nghiệm tốt hơn.
 
-> Nếu chưa chắc về bean, `@Bean`, `@Primary`, `@Qualifier`, MVC, transaction, JPA/Hibernate hoặc cache, đọc [Spring Fundamentals Handbook](10-spring-fundamentals-handbook/README.md) trước.
+> Nếu chưa chắc về bean, `@Bean`, `@Primary`, `@Qualifier`, MVC, transaction, JPA/Hibernate hoặc cache, đọc [Spring Fundamentals Handbook](04-spring-fundamentals-handbook/README.md) trước.
 
 ## 1. Bản đồ học tập
 
@@ -36,7 +36,7 @@ Khung trả lời dùng cho mọi pattern:
 
 ### Dependency Injection / Inversion of Control
 
-Deep-dive project: [`09-spring-native-patterns-deep-dive/01-dependency-injection`](09-spring-native-patterns-deep-dive/01-dependency-injection/README.md).
+Deep-dive project: [`03-spring-native-patterns-deep-dive/01-dependency-injection`](03-spring-native-patterns-deep-dive/01-dependency-injection/README.md).
 
 Spring container tạo object graph; application code chỉ khai báo dependency. Ưu tiên constructor injection và dependency vào abstraction có ý nghĩa nghiệp vụ.
 
@@ -49,7 +49,7 @@ Nên hiểu:
 
 ### Proxy
 
-Deep-dive project: [`09-spring-native-patterns-deep-dive/02-proxy-aop`](09-spring-native-patterns-deep-dive/02-proxy-aop/README.md).
+Deep-dive project: [`03-spring-native-patterns-deep-dive/02-proxy-aop`](03-spring-native-patterns-deep-dive/02-proxy-aop/README.md).
 
 `@Transactional`, `@Async`, caching, method security, retry và nhiều AOP feature chạy qua proxy.
 
@@ -63,7 +63,7 @@ Hệ quả quan trọng:
 
 ### Strategy
 
-Deep-dive project: [`09-spring-native-patterns-deep-dive/03-strategy`](09-spring-native-patterns-deep-dive/03-strategy/README.md).
+Deep-dive project: [`03-spring-native-patterns-deep-dive/03-strategy`](03-spring-native-patterns-deep-dive/03-strategy/README.md).
 
 Dùng khi thuật toán hoặc policy thay đổi theo loại payment, tenant, country, fulfillment mode hoặc feature flag.
 
@@ -71,19 +71,19 @@ Spring có thể inject `List<Strategy>` hoặc `Map<String, Strategy>`. Registr
 
 ### Factory
 
-Deep-dive project: [`09-spring-native-patterns-deep-dive/04-factory`](09-spring-native-patterns-deep-dive/04-factory/README.md).
+Deep-dive project: [`03-spring-native-patterns-deep-dive/04-factory`](03-spring-native-patterns-deep-dive/04-factory/README.md).
 
 Factory gom logic khởi tạo và lựa chọn implementation. Spring dùng pattern này ở `BeanFactory`, auto-configuration và builder APIs. Ở domain, chỉ tạo factory khi invariant khởi tạo đủ phức tạp; constructor đơn giản vẫn tốt hơn.
 
 ### Template Method / Callback
 
-Deep-dive project: [`09-spring-native-patterns-deep-dive/05-template-callback`](09-spring-native-patterns-deep-dive/05-template-callback/README.md).
+Deep-dive project: [`03-spring-native-patterns-deep-dive/05-template-callback`](03-spring-native-patterns-deep-dive/05-template-callback/README.md).
 
 `JdbcTemplate` và `TransactionTemplate` giữ resource lifecycle, còn callback cung cấp phần logic thay đổi. Pattern này hữu ích khi framework phải đảm bảo cleanup, exception translation và transaction semantics.
 
 ### Chain of Responsibility
 
-Deep-dive project: [`09-spring-native-patterns-deep-dive/06-chain-of-responsibility`](09-spring-native-patterns-deep-dive/06-chain-of-responsibility/README.md).
+Deep-dive project: [`03-spring-native-patterns-deep-dive/06-chain-of-responsibility`](03-spring-native-patterns-deep-dive/06-chain-of-responsibility/README.md).
 
 Xuất hiện ở servlet filters, Spring Security filter chain, MVC interceptors và validation/rule pipelines. Luôn xác định:
 
@@ -94,7 +94,7 @@ Xuất hiện ở servlet filters, Spring Security filter chain, MVC interceptor
 
 ### Observer và Domain Event
 
-Deep-dive project: [`09-spring-native-patterns-deep-dive/07-observer-domain-events`](09-spring-native-patterns-deep-dive/07-observer-domain-events/README.md).
+Deep-dive project: [`03-spring-native-patterns-deep-dive/07-observer-domain-events`](03-spring-native-patterns-deep-dive/07-observer-domain-events/README.md).
 
 Spring application event mặc định là synchronous và in-process. Nó không tự nhiên trở thành durable message.
 
@@ -107,7 +107,7 @@ Phân biệt:
 
 ### Adapter và Decorator
 
-Deep-dive project: [`09-spring-native-patterns-deep-dive/08-adapter-decorator`](09-spring-native-patterns-deep-dive/08-adapter-decorator/README.md).
+Deep-dive project: [`03-spring-native-patterns-deep-dive/08-adapter-decorator`](03-spring-native-patterns-deep-dive/08-adapter-decorator/README.md).
 
 Controller, repository implementation, HTTP client và Kafka consumer là adapter. Logging, metrics, tracing, retry và caching thường phù hợp với decorator/interceptor hơn là trộn vào domain.
 
@@ -308,27 +308,27 @@ Event Sourcing phù hợp khi event history là source of truth thực sự và 
 
 ### Tuần 1 — Java composition
 
-Làm project `01-java-patterns`. Refactor `if/switch` thành Strategy, thiết kế validation chain, thêm decorator. Viết unit test trước khi thêm implementation.
+Làm project `01-code-projects/01-java-patterns`. Refactor `if/switch` thành Strategy, thiết kế validation chain, thêm decorator. Viết unit test trước khi thêm implementation.
 
 ### Tuần 2 — Spring internals
 
-Làm `02-spring-core-patterns`. Quan sát injected strategy order và AOP proxy. Tạo một self-invocation case rồi sửa bằng cách tách bean/boundary.
+Làm `01-code-projects/02-spring-core-patterns`. Quan sát injected strategy order và AOP proxy. Tạo một self-invocation case rồi sửa bằng cách tách bean/boundary.
 
 ### Tuần 3–4 — Hexagonal modular monolith
 
-Làm `03-hexagonal-modulith`. Thêm payment module, giữ domain độc lập framework, viết architecture verification và module test.
+Làm `01-code-projects/03-hexagonal-modulith`. Thêm payment module, giữ domain độc lập framework, viết architecture verification và module test.
 
 ### Tuần 5 — Reliable event
 
-Làm `04-reliable-events`. Mô phỏng listener fail, kiểm tra publication record, thiết kế idempotency và recovery policy.
+Làm `01-code-projects/04-reliable-events`. Mô phỏng listener fail, kiểm tra publication record, thiết kế idempotency và recovery policy.
 
 ### Tuần 6 — Remote integration
 
-Làm `05-http-resilience`. Thêm timeout, idempotency key, retry filter, test 500 -> 200 và chứng minh số attempts.
+Làm `01-code-projects/05-http-resilience`. Thêm timeout, idempotency key, retry filter, test 500 -> 200 và chứng minh số attempts.
 
 ### Tuần 7 — Concurrency
 
-Làm `06-observability-concurrency`. So sánh platform/virtual thread dưới blocking workload; thêm concurrency limit cho downstream có pool nhỏ.
+Làm `01-code-projects/06-observability-concurrency`. So sánh platform/virtual thread dưới blocking workload; thêm concurrency limit cho downstream có pool nhỏ.
 
 ### Tuần 8 — Capstone
 

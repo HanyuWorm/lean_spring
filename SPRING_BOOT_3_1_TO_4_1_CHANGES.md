@@ -205,7 +205,7 @@ Boot 4 tách monolithic auto-configuration thành các module theo technology. H
 - Một starter cũ có thể không kéo toàn bộ behavior từng được lấy transitively.
 - Có `spring-boot-starter-classic` làm cầu nối migration, nhưng code mới nên dùng focused starters.
 
-Đây là lý do project `05-http-resilience` khai báo riêng `spring-boot-starter-restclient`.
+Đây là lý do project `01-code-projects/05-http-resilience` khai báo riêng `spring-boot-starter-restclient`.
 
 ### Jackson 3 mặc định
 
@@ -415,7 +415,6 @@ Blocking trong một số `synchronized`/native regions có thể pin carrier th
 
 ## 11. Project demo liên quan
 
-- `05-http-resilience`: HTTP Service Client và native resilience.
-- `06-observability-concurrency`: Observation và virtual executor cơ bản.
-- `07-virtual-threads-system-design`: H2/Hikari, transaction contention và explicit concurrency limit.
-
+- `01-code-projects/05-http-resilience`: HTTP Service Client và native resilience.
+- `01-code-projects/06-observability-concurrency`: Observation và virtual executor cơ bản.
+- `01-code-projects/07-virtual-threads-system-design`: H2/Hikari, transaction contention và explicit concurrency limit.

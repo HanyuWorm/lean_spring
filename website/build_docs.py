@@ -49,7 +49,7 @@ def is_vendored_repository(path: PurePosixPath) -> bool:
     parts = path.parts
     return (
         len(parts) >= 3
-        and parts[0] == "11-architecture-distributed-case-studies"
+        and parts[0] == "05-architecture-distributed-case-studies"
         and parts[1] == "repositories"
         and parts[2] != "README.md"
     )

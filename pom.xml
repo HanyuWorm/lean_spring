@@ -18,14 +18,14 @@
     <name>Spring Patterns Learning</name>
 
     <modules>
-        <module>01-java-patterns</module>
-        <module>02-spring-core-patterns</module>
-        <module>03-hexagonal-modulith</module>
-        <module>04-reliable-events</module>
-        <module>05-http-resilience</module>
-        <module>06-observability-concurrency</module>
-        <module>07-virtual-threads-system-design</module>
-        <module>09-spring-native-patterns-deep-dive</module>
+        <module>01-code-projects/01-java-patterns</module>
+        <module>01-code-projects/02-spring-core-patterns</module>
+        <module>01-code-projects/03-hexagonal-modulith</module>
+        <module>01-code-projects/04-reliable-events</module>
+        <module>01-code-projects/05-http-resilience</module>
+        <module>01-code-projects/06-observability-concurrency</module>
+        <module>01-code-projects/07-virtual-threads-system-design</module>
+        <module>03-spring-native-patterns-deep-dive</module>
     </modules>
 
     <properties>

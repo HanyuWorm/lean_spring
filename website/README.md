@@ -30,5 +30,5 @@ Sau đó mọi push vào `main` sẽ tự cập nhật [hanyuworm.github.io/lean
 
 - Render toàn bộ Markdown do learning workspace sở hữu.
 - Sinh trang syntax-highlighted cho source/config của các project demo.
-- Không nhân đôi source/README của các repository bên thứ ba nằm trong `11-architecture-distributed-case-studies/repositories`; chúng vẫn xem được trên GitHub.
+- Không nhân đôi source/README của các repository bên thứ ba nằm trong `05-architecture-distributed-case-studies/repositories`; chúng vẫn xem được trên GitHub.
 - Không đưa file build, `.env`, dependency cache hay secret vào site.
