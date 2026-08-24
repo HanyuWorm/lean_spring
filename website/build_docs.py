@@ -188,6 +188,10 @@ def main() -> None:
             asset_count += 1
 
     copy_file(PurePosixPath("website/stylesheets/extra.css"), OUTPUT / "assets/stylesheets/extra.css")
+    copy_file(
+        PurePosixPath("website/stylesheets/sidebar-hierarchy-v1.css"),
+        OUTPUT / "assets/stylesheets/sidebar-hierarchy-v1.css",
+    )
     embedded, linked_only = generate_code_pages(tracked)
     print(
         f"Generated {markdown_count} Markdown pages, {embedded} embedded code pages, "
