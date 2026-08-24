@@ -26,3 +26,6 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
+.site-docs/
+site/
+.venv-docs/

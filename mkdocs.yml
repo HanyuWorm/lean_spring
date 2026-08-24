@@ -1,0 +1,76 @@
+site_name: Lean Spring — Engineering Learning Hub
+site_description: Java, Spring Boot, distributed systems, database, cloud, security and AI engineering notes with runnable labs.
+site_url: https://hanyuworm.github.io/lean_spring/
+repo_url: https://github.com/HanyuWorm/lean_spring
+repo_name: HanyuWorm/lean_spring
+edit_uri: edit/main/
+
+docs_dir: .site-docs
+site_dir: site
+use_directory_urls: true
+
+theme:
+  name: material
+  language: vi
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Chuyển sang giao diện tối
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: light-blue
+      toggle:
+        icon: material/brightness-4
+        name: Chuyển sang giao diện sáng
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/HanyuWorm/lean_spring
+      name: Source trên GitHub
+
+copyright: Tài liệu học tập của HanyuWorm — source được quản lý trên GitHub

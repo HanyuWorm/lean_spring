@@ -2,6 +2,10 @@
 
 Workspace thực hành dành cho senior Java/Spring Boot. Mỗi thư mục là một project Maven chạy độc lập; root project là Maven reactor để build tất cả cùng lúc.
 
+## Website học trên điện thoại
+
+Toàn bộ handbook và source demo được xuất bản thành website responsive tại [hanyuworm.github.io/lean_spring](https://hanyuworm.github.io/lean_spring/). Site có tìm kiếm, dark mode, mục lục, syntax highlighting và nút copy code; mỗi push vào `main` tự deploy bằng GitHub Pages. Xem [hướng dẫn preview và publish](website/README.md).
+
 ## Yêu cầu
 
 - JDK 21
