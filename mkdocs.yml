@@ -13,9 +13,9 @@ theme:
   name: material
   language: vi
   features:
-    - navigation.tabs
     - navigation.sections
     - navigation.indexes
+    - navigation.tracking
     - navigation.top
     - navigation.footer
     - toc.follow
