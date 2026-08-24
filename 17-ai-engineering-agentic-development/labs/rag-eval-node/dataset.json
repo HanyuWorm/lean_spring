@@ -1,0 +1,23 @@
+[
+  {
+    "id": "q-order-status",
+    "query": "Trạng thái ORD-42",
+    "relevant": ["order-api-status"],
+    "results": ["order-api-status", "order-overview", "refund-policy"],
+    "tags": ["exact-id"]
+  },
+  {
+    "id": "q-refund-window",
+    "query": "Bao lâu thì được hoàn tiền?",
+    "relevant": ["refund-policy", "refund-faq"],
+    "results": ["payment-overview", "refund-policy", "refund-faq"],
+    "tags": ["semantic"]
+  },
+  {
+    "id": "q-unknown",
+    "query": "Chính sách cho sản phẩm chưa phát hành",
+    "relevant": [],
+    "results": [],
+    "tags": ["no-answer"]
+  }
+]

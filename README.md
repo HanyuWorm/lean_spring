@@ -35,6 +35,7 @@ mvn test
 | 14 | `14-database-sql-nosql-handbook` | SQL/NoSQL, MySQL/PostgreSQL/MongoDB, transaction/index/scale và changelog 2023-2026 |
 | 15 | `15-system-design-security-handbook` | Security architecture cho cloud/no-cloud: identity, API, data, network, supply chain và incident |
 | 16 | `16-aws-gcp-cloud-handbook` | AWS/GCP từ foundations tới landing zone, workload, data, security, DR, FinOps và IaC |
+| 17 | `17-ai-engineering-agentic-development` | AI Engineering, RAG, agent harness, MCP/A2A, eval, security, Spring AI 2 và AI-assisted development |
 
 Đọc [SPRING_BOOT_DESIGN_PATTERNS.md](SPRING_BOOT_DESIGN_PATTERNS.md) trước, sau đó làm `README.md` và các bài `TODO` trong từng project. Khi migrate hệ thống hiện có, đọc thêm [SPRING_BOOT_3_1_TO_4_1_CHANGES.md](SPRING_BOOT_3_1_TO_4_1_CHANGES.md).
 
@@ -57,6 +58,8 @@ Nếu cần học lại nền tảng trước khi vào patterns, đọc [`10-spr
 Để thiết kế security xuyên suốt hệ thống, dùng [`15-system-design-security-handbook`](15-system-design-security-handbook/README.md). Track áp dụng NIST CSF 2.0, Zero Trust, NIST Digital Identity, OWASP ASVS 5.0 và OAuth Security BCP cho cả cloud, hybrid lẫn on-prem/no-cloud; kèm threat model, security review, incident tabletop và commerce case study.
 
 Để học cloud theo góc nhìn solution architect, dùng [`16-aws-gcp-cloud-handbook`](16-aws-gcp-cloud-handbook/README.md). Track định nghĩa tiếng Việt các thành phần AWS/GCP, giải thích chức năng và trade-off, ánh xạ dịch vụ, đồng thời bao quát landing zone/IAM/network/compute/data/messaging/security/operations/DR/FinOps/IaC với lab không tự phát sinh chi phí.
+
+Để học AI theo hướng software engineer/solution architect, dùng [`17-ai-engineering-agentic-development`](17-ai-engineering-agentic-development/README.md). Track phản biện note Gemini và cập nhật tới 24/08/2026: model/API, prompt và context engineering, structured output/tool calling, RAG, agent harness, MCP/A2A, memory, eval, observability, security, production, spec-driven coding agent và Spring AI 2; kèm ba lab chạy offline và bộ template áp dụng ngay vào dự án.
 
 ## Lệnh thường dùng
 
