@@ -33,6 +33,8 @@ mvn test
 | 12 | `12-spring-memory-management` | JVM/Spring memory, Hibernate, cache, Virtual Threads, container sizing và OOM playbook |
 | 13 | `13-nodejs-backend-nextjs-roadmap` | Node.js/TypeScript backend và Next.js App Router từ nền tảng đến production |
 | 14 | `14-database-sql-nosql-handbook` | SQL/NoSQL, MySQL/PostgreSQL/MongoDB, transaction/index/scale và changelog 2023-2026 |
+| 15 | `15-system-design-security-handbook` | Security architecture cho cloud/no-cloud: identity, API, data, network, supply chain và incident |
+| 16 | `16-aws-gcp-cloud-handbook` | AWS/GCP từ foundations tới landing zone, workload, data, security, DR, FinOps và IaC |
 
 Đọc [SPRING_BOOT_DESIGN_PATTERNS.md](SPRING_BOOT_DESIGN_PATTERNS.md) trước, sau đó làm `README.md` và các bài `TODO` trong từng project. Khi migrate hệ thống hiện có, đọc thêm [SPRING_BOOT_3_1_TO_4_1_CHANGES.md](SPRING_BOOT_3_1_TO_4_1_CHANGES.md).
 
@@ -51,6 +53,10 @@ Nếu cần học lại nền tảng trước khi vào patterns, đọc [`10-spr
 Để mở rộng sang hệ sinh thái JavaScript, dùng [`13-nodejs-backend-nextjs-roadmap`](13-nodejs-backend-nextjs-roadmap/README.md). Track này đi từ JavaScript/TypeScript, Node runtime, backend API và distributed systems đến Next.js 16 App Router; có lab Node core, Fastify API và Next.js, đồng thời ánh xạ khái niệm tương đương trong Spring Boot.
 
 Để học database engineering từ nền tảng tới solution architecture, dùng [`14-database-sql-nosql-handbook`](14-database-sql-nosql-handbook/README.md). Track bao gồm SQL nâng cao, modeling, index/execution plan, transaction/MVCC, replication/sharding/CDC, NoSQL, deep dive MySQL/PostgreSQL/MongoDB, 60 câu hỏi có đáp án và Docker lab so sánh ba engine trên cùng commerce domain.
+
+Để thiết kế security xuyên suốt hệ thống, dùng [`15-system-design-security-handbook`](15-system-design-security-handbook/README.md). Track áp dụng NIST CSF 2.0, Zero Trust, NIST Digital Identity, OWASP ASVS 5.0 và OAuth Security BCP cho cả cloud, hybrid lẫn on-prem/no-cloud; kèm threat model, security review, incident tabletop và commerce case study.
+
+Để học cloud theo góc nhìn solution architect, dùng [`16-aws-gcp-cloud-handbook`](16-aws-gcp-cloud-handbook/README.md). Track định nghĩa tiếng Việt các thành phần AWS/GCP, giải thích chức năng và trade-off, ánh xạ dịch vụ, đồng thời bao quát landing zone/IAM/network/compute/data/messaging/security/operations/DR/FinOps/IaC với lab không tự phát sinh chi phí.
 
 ## Lệnh thường dùng
 
