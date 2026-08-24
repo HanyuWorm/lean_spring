@@ -77,10 +77,9 @@ Có thể bắt đầu bằng modular monolith, sau đó extract Payment để c
 
 Bạn phải trả lời được:
 
-1. Bottleneck nằm đâu khi tăng concurrency gấp 10?
-2. Điều gì được đảm bảo atomic, điều gì chỉ eventual?
-3. Duplicate được chặn ở technical layer và business layer thế nào?
-4. Khi nào modular monolith không còn đáp ứng?
-5. Recovery có cần thao tác operator không và audit ở đâu?
-6. Chi phí phức tạp nào có thể bỏ nếu traffic nhỏ hơn dự kiến?
-
+1. **Bottleneck nằm đâu khi tăng concurrency gấp 10?** Trả lời bằng load-test evidence: throughput plateau và wait/saturation đầu tiên ở admission, Hikari/DB lock/IO, Kafka partition hay downstream; kèm Little's Law estimate, p99 và retry amplification. Không trả lời chỉ bằng tên component.
+2. **Điều gì được đảm bảo atomic, điều gì chỉ eventual?** Order/aggregate và outbox insert atomic trong một DB transaction; reserve inventory/payment atomic trong owner của chúng; trạng thái xuyên owner hội tụ eventual qua Saga. Nêu rõ inconsistency window, user-visible state và reconciler.
+3. **Duplicate được chặn ở technical layer và business layer thế nào?** HTTP idempotency/inbox unique chặn cùng request/event ID; database business unique/conditional state chặn effect tương đương với key khác. Provider call có idempotency key và outcome reconciliation.
+4. **Khi nào modular monolith không còn đáp ứng?** Khi một bounded context có nhu cầu release/scale/SLO/security/data residency hoặc team autonomy khác đủ lớn, và module boundary đã rõ để extraction giảm coupling hơn chi phí distributed operations.
+5. **Recovery có cần thao tác operator không và audit ở đâu?** Transient recovery tự động trong retry budget; stuck/ambiguous/payment/poison cases vào operator queue có safe replay/compensate. Audit lưu actor, command/event, old/new state, attempt, reason và correlation; thao tác manual cũng là command idempotent.
+6. **Chi phí phức tạp nào có thể bỏ nếu traffic nhỏ hơn dự kiến?** Bỏ multi-region active-active, CQRS store riêng, Kafka cho flow đơn giản, distributed cache/lock và service split sớm; giữ correctness boundary, idempotency, backup/restore và observability tối thiểu. Ghi trigger để thêm lại.

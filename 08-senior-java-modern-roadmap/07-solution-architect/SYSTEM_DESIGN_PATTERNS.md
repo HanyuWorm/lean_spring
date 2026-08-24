@@ -185,12 +185,34 @@ Chấm 1-5 và ghi bằng chứng, không dùng điểm số giả chính xác �
 
 ## 13. Câu hỏi phỏng vấn Solution Architect
 
-1. Khi nào modular monolith tốt hơn microservices trong ba năm tới?
-2. Làm sao chuyển shared database sang database-per-service không big bang?
-3. Chọn consistency model nào cho order, payment, inventory và catalog?
-4. Hệ thống chịu được một region mất hoàn toàn ra sao? RPO/RTO bao nhiêu?
-5. Khi traffic tăng 10 lần, bottleneck đầu tiên và kế hoạch kiểm chứng là gì?
-6. Pattern nào giảm blast radius? Chi phí vận hành của nó là gì?
-7. Làm sao rollback application khi database schema đã migrate?
-8. Bạn loại bỏ pattern/công nghệ nào khỏi target architecture và vì sao?
+### 1. Khi nào modular monolith tốt hơn microservices trong ba năm tới?
 
+**Trả lời:** Khi team/domain còn nhỏ, phần lớn module cùng release/scale/SLO, transaction đồng bộ có giá trị và bottleneck chưa cần tách vật lý. Package/module boundary, ownership, architecture tests và observability vẫn phải rõ để giữ option extraction. Microservices chỉ thắng khi autonomy về team/release/scale/failure/compliance đủ trả chi phí network, data consistency và operations.
+
+### 2. Làm sao chuyển shared database sang database-per-service không big bang?
+
+**Trả lời:** Map table/data owner và cấm write mới xuyên boundary; đặt API/ACL quanh owner. Tách từng capability bằng branch-by-abstraction/strangler, dùng expand-contract schema, backfill + CDC/outbox để đồng bộ tạm, shadow read/compare và reconciliation. Chuyển writer trước hoặc theo migration plan rõ, rồi consumers, cuối cùng revoke quyền/drop path cũ. Dual-write không có recovery không phải migration plan.
+
+### 3. Chọn consistency model nào cho order, payment, inventory và catalog?
+
+**Trả lời:** Theo invariant/journey, không theo entity label. Order transition và payment ledger cần strong consistency trong owner; payment call idempotent và outcome có thể `UNKNOWN`. Inventory reserve/decrement cần atomic conditional update trong shard/owner nhưng order nhìn reservation eventual qua Saga. Catalog/search/cache chấp nhận eventual với freshness SLA. Cross-owner dùng state machine, outbox và reconciliation thay distributed transaction mặc định.
+
+### 4. Hệ thống chịu được một region mất hoàn toàn ra sao? RPO/RTO bao nhiêu?
+
+**Trả lời:** RPO/RTO là business input theo data tier. Thiết kế gồm traffic failover, compute/config/secrets sẵn, replication/backup độc lập corruption, dependency/identity/DNS và runbook đã diễn tập. Active-passive đơn giản hơn nhưng RTO lớn; active-active giảm RTO nhưng conflict/split-brain/cost cao. Không hứa RPO=0 nếu replication async; đo bằng game day/restore, không bằng diagram.
+
+### 5. Khi traffic tăng 10 lần, bottleneck đầu tiên và kế hoạch kiểm chứng là gì?
+
+**Trả lời:** Không đoán “DB” hoặc “CPU”. Lập concurrency/storage/network model từ arrival rate × service/hold time, xác định limit ở gateway/app pools/DB locks/IO/broker/third party. Load test traffic/data/hot-key distribution thật theo từng bậc, quan sát p95/p99, queue/wait, utilization, error/retry và throughput plateau. Failure test downstream slow để thấy feedback loop; tối ưu bottleneck đầu rồi test lại.
+
+### 6. Pattern nào giảm blast radius? Chi phí vận hành của nó là gì?
+
+**Trả lời:** Bulkhead/cell/shard theo tenant/workload, per-dependency concurrency limit, queue isolation và progressive delivery. Cost là duplicated capacity/data, routing/placement, uneven utilization, config/deploy nhiều cell, cross-cell operation và incident tooling. Chọn isolation key theo failure domain và có cell evacuation/rebalancing plan.
+
+### 7. Làm sao rollback application khi database schema đã migrate?
+
+**Trả lời:** Dùng expand-and-contract: thêm schema backward-compatible, deploy code đọc/ghi tương thích, backfill/verify, chuyển traffic rồi mới contract ở release sau. Rollback app trong mixed-version window vẫn dùng schema mở rộng. Migration destructive thường roll-forward bằng corrective migration; restore DB là disaster operation và có thể mất write mới, không phải nút rollback thường ngày.
+
+### 8. Bạn loại bỏ pattern/công nghệ nào khỏi target architecture và vì sao?
+
+**Trả lời:** Loại thứ không phục vụ driver hoặc không có owner/operational maturity: ví dụ microservices/Kafka/Kubernetes/multi-region/event sourcing nếu scale, autonomy, audit hay availability không yêu cầu. Nêu complexity/cost/failure modes được loại, phương án đơn giản thay thế, trigger/metric để xem xét lại. Khả năng nói “không” có evidence quan trọng hơn danh sách công nghệ dài.

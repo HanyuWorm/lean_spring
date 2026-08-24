@@ -104,9 +104,26 @@ Không có distributed transaction nên luôn tồn tại khoảng inconsistency
 
 ## 7. Câu hỏi review kiến trúc
 
-- Giữa Redis và Kafka đang có dual-write nào? Nếu process chết đúng giữa hai bước thì ai sửa?
-- Reservation TTL dài hơn worst-case Kafka lag bao nhiêu?
-- Rebalance consumer có làm vượt processing timeout và redelivery không?
-- Có giới hạn số request đang chờ Hikari/Redis/Kafka hay chỉ giới hạn thread?
-- Dashboard có stock reserved, confirmed, released, DB total và reconciliation delta không?
-- Load test có failure injection, retry storm và hot-key distribution không?
+### 1. Giữa Redis và Kafka đang có dual-write nào? Nếu process chết đúng giữa hai bước thì ai sửa?
+
+**Trả lời:** Có dual-write nếu request giảm stock trong Redis rồi publish Kafka bằng hai thao tác độc lập. Process chết sau bước một tạo reservation mồ côi; chết trước bước một nhưng client nhận trạng thái không rõ có thể gây retry. Không thể giải quyết bằng `try/catch` đơn thuần. Cần lưu một reservation record có trạng thái và idempotency key, sau đó relay/reconciler định kỳ publish lại hoặc release reservation quá hạn. Consumer phải idempotent vì relay có thể publish trùng. Nếu dùng Redis Streams/Lua để tạo reservation và command atomically trong cùng Redis thì vẫn cần chiến lược đưa dữ liệu bền vững sang Kafka/DB và phục hồi khi Redis gặp sự cố.
+
+### 2. Reservation TTL dài hơn worst-case Kafka lag bao nhiêu?
+
+**Trả lời:** TTL không nên là một con số đoán. Ngân sách tối thiểu phải lớn hơn `queue lag cực đại + processing timeout + retry/backoff + thời gian phục hồi sự cố + safety margin`. Cần cảnh báo khi tuổi reservation tiến gần TTL và reconciler phải phân biệt reservation đang xử lý với reservation thật sự mồ côi. Nếu TTL hết trước khi consumer commit, hệ thống có thể vừa trả stock vừa tạo order, gây oversell.
+
+### 3. Rebalance consumer có làm vượt processing timeout và redelivery không?
+
+**Trả lời:** Có. Rebalance, xử lý lâu hơn `max.poll.interval.ms`, crash sau DB commit nhưng trước offset commit đều có thể làm message được giao lại. Thiết kế phải giả định at-least-once: dùng inbox/unique constraint theo `event_id`, transaction hóa inbox với business write, chỉ commit offset sau commit DB và điều chỉnh batch, poll interval, pause/resume theo thời gian xử lý thực tế. Không lấy việc “Kafka chỉ giao một lần trong test” làm invariant.
+
+### 4. Có giới hạn số request đang chờ Hikari/Redis/Kafka hay chỉ giới hạn thread?
+
+**Trả lời:** Phải giới hạn work-in-flight theo từng downstream. Thread pool hay Virtual Thread không đại diện cho sức chứa của DB, Redis hoặc Kafka. Dùng semaphore/bulkhead, bounded queue và deadline trước khi gọi dependency; khi hết capacity thì fail fast hoặc degrade. Hikari là hàng rào cuối cho connection DB, không thay thế admission control ở endpoint và không bảo vệ phần Redis/Kafka hay memory dành cho request đang chờ.
+
+### 5. Dashboard có stock reserved, confirmed, released, DB total và reconciliation delta không?
+
+**Trả lời:** Cần có. Dashboard tối thiểu theo dõi số lượng `available`, `reserved`, `confirmed`, `released`, stock bền vững trong DB, reconciliation delta, tuổi reservation lâu nhất và số lần sửa lệch. Một invariant mẫu là `initial stock = available + active reservations + confirmed sales` sau khi tính các release hợp lệ. Chỉ theo dõi HTTP success rate sẽ không phát hiện silent oversell hoặc stock bị kẹt.
+
+### 6. Load test có failure injection, retry storm và hot-key distribution không?
+
+**Trả lời:** Load test chỉ bắn happy-path request chưa đủ. Cần mô phỏng một campaign nóng, phân bố key lệch, client retry cùng và khác idempotency key, Kafka rebalance/redelivery, DB chậm, Redis timeout, relay crash giữa hai bước và dependency hồi phục. Tiêu chí đạt không chỉ là throughput/p99 mà còn gồm không oversell, không double charge, backlog thoát hết sau sự cố, reconciliation delta về 0 và hệ thống từ chối tải có kiểm soát.

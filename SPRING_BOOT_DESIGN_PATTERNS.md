@@ -25,6 +25,13 @@ Mỗi chặng phải trả lời được bốn câu hỏi:
 3. Failure mode mới do pattern tạo ra là gì?
 4. Test nào chứng minh implementation đúng?
 
+Khung trả lời dùng cho mọi pattern:
+
+1. **Force/conflict:** nêu hai yêu cầu đang kéo hệ thống theo hai hướng, ví dụ cần thay đổi implementation mà không làm domain phụ thuộc framework. Nếu không chỉ ra được conflict, rất có thể pattern đang bị áp dụng vì thói quen.
+2. **Boundary/dependency:** xác định component nào sở hữu rule, component nào chỉ là adapter và chiều dependency compile-time. Với Ports & Adapters, domain định nghĩa port; adapter phụ thuộc port, không đảo ngược.
+3. **Failure mode:** liệt kê chi phí mới như thêm indirection, cấu hình sai bean, retry khuếch đại tải, event trùng hoặc eventual consistency. Pattern không xóa độ phức tạp mà chuyển nó đến nơi kiểm soát được hơn.
+4. **Bằng chứng bằng test:** ưu tiên test đúng loại rủi ro: unit test cho policy, contract test cho boundary, integration test cho transaction/configuration, concurrency test cho race và architecture test cho chiều dependency.
+
 ## 2. Spring-native patterns phải nắm sâu
 
 ### Dependency Injection / Inversion of Control

@@ -68,8 +68,32 @@ Nếu chọn Event Sourcing, phải trả lời snapshot, event schema evolution
 
 ## Câu hỏi phỏng vấn
 
-1. Chọn choreography hay orchestration theo tiêu chí nào?
-2. Compensation thất bại thì workflow đi đâu?
-3. Circuit breaker khác rate limiter và bulkhead thế nào?
-4. CQRS có cần hai database không?
-5. Làm sao replay event mà không gửi lại email/thanh toán?
+### 1. Chọn choreography hay orchestration theo tiêu chí nào?
+
+**Trả lời:** Choreography hợp flow ngắn, phản ứng độc lập và ownership phân tán; giảm coordinator nhưng global flow khó thấy, cycle/version/debug dễ phức tạp. Orchestration hợp workflow dài, state/timeout/compensation/audit rõ và cần operator visibility; đổi lại orchestrator là component phải scale/recover và không được nuốt domain logic của service.
+
+Chọn theo số bước, branching, timeout, compliance, change ownership và nhu cầu quan sát—not theo số service. Dù chọn gì, có correlation, idempotency và explicit state/failure matrix.
+
+### 2. Compensation thất bại thì workflow đi đâu?
+
+**Trả lời:** Vào trạng thái explicit như `COMPENSATION_PENDING/FAILED`, retry idempotent theo budget, sau đó DLQ/operator queue và reconciler. Compensation là business action mới, không phải rollback ACID; nó cũng có authorization, timeout và có thể không hoàn tác hoàn toàn.
+
+Persist saga state/attempt/error, alert theo age/SLO và cung cấp safe replay/manual resolution với audit. Định nghĩa forward recovery nếu hoàn tác không khả thi.
+
+### 3. Circuit breaker khác rate limiter và bulkhead thế nào?
+
+**Trả lời:** Circuit breaker ngừng gọi dependency có tỷ lệ lỗi/slow cao để fail fast và cho hồi phục. Rate limiter giới hạn tốc độ theo thời gian/identity để bảo vệ quota/capacity/abuse. Bulkhead giới hạn concurrency/resource theo workload để lỗi/saturation một nhóm không chiếm hết hệ thống.
+
+Chúng giải quyết failure khác nhau và thường phối hợp: rate limit trước admission, bulkhead quanh dependency, circuit dựa trên outcome. Cấu hình sai có thể reject khỏe, oscillate hoặc che root cause.
+
+### 4. CQRS có cần hai database không?
+
+**Trả lời:** Không. CQRS là tách command model khỏi query model/contract; có thể cùng database/schema, view/materialized view hoặc storage riêng. Hai DB chỉ đáng dùng khi scale, shape, availability hoặc lifecycle read/write khác đủ mạnh.
+
+Storage riêng tạo projection lag, replay, dual operations, schema evolution và reconciliation. Bắt đầu logical separation rồi tách vật lý khi metric/requirement chứng minh.
+
+### 5. Làm sao replay event mà không gửi lại email/thanh toán?
+
+**Trả lời:** Tách deterministic projection handlers khỏi irreversible side-effect handlers. Mỗi effect có event/effect ID và inbox/idempotency record hoặc provider idempotency key; replay mode chỉ rebuild projection, hoặc effect gateway kiểm ledger và skip effect đã hoàn tất.
+
+Không reset offset rồi hy vọng consumer tự biết. Version replay job, dùng isolated consumer group/output store, disable/route external effect rõ và reconcile count/hash trước cutover.

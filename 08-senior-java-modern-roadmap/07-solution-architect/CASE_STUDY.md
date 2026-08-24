@@ -46,14 +46,16 @@ Thiết kế `current -> transition -> target architecture` cho 18 tháng. Khôn
 
 Chuẩn bị trả lời ngắn, có evidence:
 
-1. CFO yêu cầu giảm 30% cost: bỏ thành phần nào trước?
-2. CTO muốn microservices toàn bộ trong sáu tháng: risk và alternative?
-3. Payment provider p99 tăng từ 500 ms lên 8 giây trong sale.
-4. Kafka unavailable 45 phút, backlog tăng mạnh sau recovery.
-5. Một event schema sai đã cập nhật read model trong hai giờ.
-6. Region chính mất hoàn toàn; backup gần nhất cách 10 phút.
-7. Một tenant lớn chiếm 60% DB connections.
-8. Mobile client cũ không nâng cấp trong sáu tháng.
+| Tình huống | Hướng trả lời |
+|---|---|
+| CFO yêu cầu giảm 30% cost: bỏ thành phần nào trước? | Dùng cost-by-service/unit economics; tắt môi trường idle, giảm log/trace/cardinality/retention và overprovision trước. Sau đó hợp nhất workload nhỏ, bỏ cache/stream/multi-region không có driver. Không giảm backup/security/capacity mù quáng; đặt SLO guardrail. |
+| CTO muốn microservices toàn bộ trong sáu tháng: risk và alternative? | Risk: boundary chưa rõ, shared DB/distributed monolith, delivery chậm, observability/on-call bùng nổ. Alternative: modular monolith + ownership/architecture tests; strangler/extract 1–2 capability có driver rõ và platform runway, đo lead time/reliability rồi mở rộng. |
+| Payment provider p99 tăng từ 500 ms lên 8 giây trong sale | Propagate deadline, giới hạn concurrent calls, circuit/fail-fast và không retry storm. Checkout chuyển `PAYMENT_PENDING`, dùng provider idempotency key + status query/webhook/reconciliation; không giữ DB transaction/connection 8 giây. |
+| Kafka unavailable 45 phút, backlog tăng mạnh sau recovery | Outbox giữ intent, producer bounded và service degrade theo backlog budget. Khi recover, rate-limit replay theo downstream capacity, ưu tiên/partition công bằng, scale consumer tới partition limit và theo dõi age; poison events cách ly, không làm retry storm. |
+| Một event schema sai đã cập nhật read model trong hai giờ | Stop consumer/producer version, preserve evidence, xác định offset/affected rows. Fix transformer/schema, rebuild projection từ clean checkpoint vào shadow table, compare rồi swap; side-effect consumer không replay. Thêm compatibility/semantic contract test và canary. |
+| Region chính mất hoàn toàn; backup gần nhất cách 10 phút | Công bố RPO thực tế 10 phút nếu không có replica/WAL mới hơn; failover compute/dependencies theo runbook, restore và reconcile external ledgers/idempotency. Không claim zero loss. Sau incident đánh giá replication/PITR và business cost để đổi tier. |
+| Một tenant lớn chiếm 60% DB connections | Per-tenant admission/bulkhead/quota, fairness queue và timeout; quan sát noisy queries/hold time. Tối ưu/index rồi cân nhắc dedicated pool/cell/shard cho tenant lớn; pool global đơn thuần không bảo vệ tenant nhỏ. |
+| Mobile client cũ không nâng cấp trong sáu tháng | Giữ backward-compatible API/expand-contract, additive fields, tolerant enum và capability/version telemetry. BFF/server adapter duy trì old contract có deprecation date; không xóa schema/path tới khi usage về ngưỡng và có migration communication. |
 
 ## Format buổi review
 
@@ -75,4 +77,3 @@ Chuẩn bị trả lời ngắn, có evidence:
 | Communication, option analysis và roadmap | 20% |
 
 Không cộng điểm chỉ vì số lượng công nghệ. Một target đơn giản, tiến hóa được và có evidence tốt hơn một diagram nhiều boxes nhưng thiếu ownership/failure model.
-

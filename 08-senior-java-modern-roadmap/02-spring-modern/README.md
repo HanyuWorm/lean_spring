@@ -76,9 +76,32 @@ Không đặt model call trực tiếp trong JPA transaction. AI output là untr
 
 ## Câu hỏi phỏng vấn
 
-1. Khi nào `WebClient` vẫn hợp lý hơn Virtual Threads + `RestClient`?
-2. AOT/native image thay đổi cách dùng reflection/proxy ra sao?
-3. Bạn đặt retry ở client, gateway hay message consumer dựa trên tiêu chí nào?
-4. Domain event khác integration event về contract và transaction thế nào?
-5. Làm sao đo chất lượng RAG ngoài việc demo một prompt đẹp?
+### 1. Khi nào `WebClient` vẫn hợp lý hơn Virtual Threads + `RestClient`?
 
+**Trả lời:** Khi pipeline end-to-end đã reactive; cần streaming/SSE, backpressure, fan-out lớn với operator composition; hoặc phải tích hợp API/library chỉ cung cấp non-blocking publisher. `WebClient` cũng phù hợp khi team có năng lực debug reactive context và lợi ích đo được.
+
+Với request/response blocking thông thường, JDBC và codebase imperative, Virtual Threads + `RestClient` thường đơn giản hơn. Không trộn `.block()` tùy tiện trong event loop; chọn theo toàn data path, failure/cancellation và benchmark cùng downstream limit.
+
+### 2. AOT/native image thay đổi cách dùng reflection/proxy ra sao?
+
+**Trả lời:** Native image dùng closed-world analysis nên reflection, resource, serialization, JNI và dynamic proxy không được tự động khám phá như JVM runtime. Framework phải sinh code hoặc cung cấp runtime hints; class/proxy được tạo hoàn toàn động, scan classpath và plugin load runtime bị hạn chế.
+
+Giữ reflection ở adapter, dùng Spring AOT-compatible APIs, chạy native integration test và kiểm startup/RSS/build-time thay vì giả định native luôn tốt hơn. JDK dynamic proxy cho interface và class proxy có constraint khác; self-invocation vẫn không qua proxy.
+
+### 3. Bạn đặt retry ở client, gateway hay message consumer dựa trên tiêu chí nào?
+
+**Trả lời:** Đặt ở layer gần operation nhất nhưng biết được transient classification, idempotency và deadline; chỉ một layer sở hữu retry budget. Client library hợp với network transient cho một dependency. Gateway chỉ retry request an toàn/idempotent và không che business semantics. Consumer retry theo delivery contract, có backoff/DLQ và idempotent handler.
+
+Không retry ở cả ba layer. Tính tổng attempts toàn chain, tránh retry 429 không theo `Retry-After`, và với write cần idempotency key/outcome query vì timeout không chứng minh operation chưa chạy.
+
+### 4. Domain event khác integration event về contract và transaction thế nào?
+
+**Trả lời:** Domain event diễn đạt fact bên trong bounded context, có thể dùng type/domain detail nội bộ và thường được tạo cùng aggregate transition. Integration event là public contract cho context khác, cần schema/version, backward compatibility, privacy và lifecycle dài hơn.
+
+Có thể map domain event sang integration event sau commit. Nếu cần reliable publish, ghi outbox trong cùng transaction rồi relay. Không gửi object JPA/domain trực tiếp ra broker và không remote publish từ entity trong transaction.
+
+### 5. Làm sao đo chất lượng RAG ngoài việc demo một prompt đẹp?
+
+**Trả lời:** Xây golden dataset có answerable/no-answer/adversarial/tenant slices. Đo retrieval riêng bằng Recall@k, MRR/nDCG và ACL leakage; đo answer bằng correctness, groundedness, citation precision/recall, abstention và task success. Grader code/rule ưu tiên, model judge phải calibrate với human labels.
+
+Release so candidate với baseline và hard-gate security/critical facts; theo dõi p95 latency, tokens/cost, empty retrieval, user correction và drift online. Trace query → candidates → selected chunks → answer/citations để biết lỗi ở ingestion, retrieval hay generation.

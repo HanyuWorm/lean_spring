@@ -113,10 +113,9 @@ Không gọi `context.getBean()` rải rác trong business code. Đó là Servic
 
 ## Câu hỏi tự kiểm tra
 
-1. Spring Boot khác Spring Framework ở đâu?
-2. Vì sao application class location ảnh hưởng component scan?
-3. Auto-configuration “back off” nghĩa là gì?
-4. Starter, auto-configuration và annotation khác nhau thế nào?
+1. **Spring Boot khác Spring Framework ở đâu?** Spring Framework cung cấp IoC/DI, AOP, MVC, transaction, data integration và programming model. Spring Boot opinionate việc bootstrap: starters/dependency management, auto-configuration, embedded server, externalized config, Actuator và packaging. Boot dùng Framework, không thay thế nó.
+2. **Vì sao application class location ảnh hưởng component scan?** `@SpringBootApplication` bao gồm `@ComponentScan` mặc định từ package chứa application class xuống subpackages. Đặt class quá sâu làm bean ngoài cây không được scan; đặt default/root package có thể scan quá rộng. Đặt ở root package của app hoặc cấu hình scan/import rõ.
+3. **Auto-configuration “back off” nghĩa là gì?** Auto-config có conditional như missing bean/class/property. Khi user khai báo bean/config phù hợp, condition không còn đúng nên default không được tạo. Đây là “convention with override”, cần xem condition evaluation report khi không như dự kiến.
+4. **Starter, auto-configuration và annotation khác nhau thế nào?** Starter là dependency descriptor gom libraries; auto-configuration là code cấu hình có điều kiện tạo beans; annotation là metadata được compiler/container/proxy/framework đọc. Thêm starter có thể đưa auto-config lên classpath, nhưng annotation chỉ có tác dụng khi processor/infrastructure tương ứng tồn tại.
 
 Nguồn: [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/), [Spring IoC Container](https://docs.spring.io/spring-framework/reference/core/beans.html).
-
