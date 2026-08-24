@@ -31,6 +31,7 @@ CODE_SUFFIXES = {
     ".json": "json",
     ".properties": "properties",
     ".toml": "toml",
+    ".tf": "hcl",
     ".sh": "bash",
     ".ps1": "powershell",
 }
