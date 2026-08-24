@@ -32,6 +32,7 @@ mvn test
 | 11 | `11-architecture-distributed-case-studies` | 6 upstream case study: Saga/Outbox/flash sale/Kafka/Virtual Threads/Spring Cloud |
 | 12 | `12-spring-memory-management` | JVM/Spring memory, Hibernate, cache, Virtual Threads, container sizing và OOM playbook |
 | 13 | `13-nodejs-backend-nextjs-roadmap` | Node.js/TypeScript backend và Next.js App Router từ nền tảng đến production |
+| 14 | `14-database-sql-nosql-handbook` | SQL/NoSQL, MySQL/PostgreSQL/MongoDB, transaction/index/scale và changelog 2023-2026 |
 
 Đọc [SPRING_BOOT_DESIGN_PATTERNS.md](SPRING_BOOT_DESIGN_PATTERNS.md) trước, sau đó làm `README.md` và các bài `TODO` trong từng project. Khi migrate hệ thống hiện có, đọc thêm [SPRING_BOOT_3_1_TO_4_1_CHANGES.md](SPRING_BOOT_3_1_TO_4_1_CHANGES.md).
 
@@ -48,6 +49,8 @@ Nếu cần học lại nền tảng trước khi vào patterns, đọc [`10-spr
 Để học và điều tra memory ở mức senior/architect, dùng [`12-spring-memory-management`](12-spring-memory-management/README.md). Handbook phân biệt heap với native/RSS, giải thích bean scope, JPA persistence context, cache, WebFlux buffer, Virtual Threads, container sizing, quy trình phân tích OOM và 50 câu hỏi có đáp án từ nền tảng đến production incident.
 
 Để mở rộng sang hệ sinh thái JavaScript, dùng [`13-nodejs-backend-nextjs-roadmap`](13-nodejs-backend-nextjs-roadmap/README.md). Track này đi từ JavaScript/TypeScript, Node runtime, backend API và distributed systems đến Next.js 16 App Router; có lab Node core, Fastify API và Next.js, đồng thời ánh xạ khái niệm tương đương trong Spring Boot.
+
+Để học database engineering từ nền tảng tới solution architecture, dùng [`14-database-sql-nosql-handbook`](14-database-sql-nosql-handbook/README.md). Track bao gồm SQL nâng cao, modeling, index/execution plan, transaction/MVCC, replication/sharding/CDC, NoSQL, deep dive MySQL/PostgreSQL/MongoDB, 60 câu hỏi có đáp án và Docker lab so sánh ba engine trên cùng commerce domain.
 
 ## Lệnh thường dùng
 
