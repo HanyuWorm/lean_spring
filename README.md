@@ -31,6 +31,7 @@ mvn test
 | 9 | `09-spring-native-patterns-deep-dive` | 8 project chuyên sâu, mỗi Spring-native pattern một project độc lập |
 | 11 | `11-architecture-distributed-case-studies` | 6 upstream case study: Saga/Outbox/flash sale/Kafka/Virtual Threads/Spring Cloud |
 | 12 | `12-spring-memory-management` | JVM/Spring memory, Hibernate, cache, Virtual Threads, container sizing và OOM playbook |
+| 13 | `13-nodejs-backend-nextjs-roadmap` | Node.js/TypeScript backend và Next.js App Router từ nền tảng đến production |
 
 Đọc [SPRING_BOOT_DESIGN_PATTERNS.md](SPRING_BOOT_DESIGN_PATTERNS.md) trước, sau đó làm `README.md` và các bài `TODO` trong từng project. Khi migrate hệ thống hiện có, đọc thêm [SPRING_BOOT_3_1_TO_4_1_CHANGES.md](SPRING_BOOT_3_1_TO_4_1_CHANGES.md).
 
@@ -45,6 +46,8 @@ Nếu cần học lại nền tảng trước khi vào patterns, đọc [`10-spr
 Để luyện Architecture/Distributed Systems từ source thực tế, dùng [`11-architecture-distributed-case-studies`](11-architecture-distributed-case-studies/README.md). Folder này clone FTGO, Debezium Outbox, Piomin, Miaosha, benchmark Virtual Threads/WebFlux và Petclinic; kèm repository guide, build report và note chuyên sâu về inventory race, idempotency, Kafka ordering và backpressure.
 
 Để học và điều tra memory ở mức senior/architect, dùng [`12-spring-memory-management`](12-spring-memory-management/README.md). Handbook phân biệt heap với native/RSS, giải thích bean scope, JPA persistence context, cache, WebFlux buffer, Virtual Threads, container sizing, quy trình phân tích OOM và 50 câu hỏi có đáp án từ nền tảng đến production incident.
+
+Để mở rộng sang hệ sinh thái JavaScript, dùng [`13-nodejs-backend-nextjs-roadmap`](13-nodejs-backend-nextjs-roadmap/README.md). Track này đi từ JavaScript/TypeScript, Node runtime, backend API và distributed systems đến Next.js 16 App Router; có lab Node core, Fastify API và Next.js, đồng thời ánh xạ khái niệm tương đương trong Spring Boot.
 
 ## Lệnh thường dùng
 

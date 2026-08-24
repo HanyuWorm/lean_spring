@@ -1,0 +1,20 @@
+{
+  "name": "nodejs-backend-nextjs-roadmap",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:runtime": "npm test --workspace @learning/node-runtime-lab",
+    "test:api": "npm test --workspace @learning/fastify-api",
+    "build:next": "npm run build --workspace @learning/next-learning",
+    "dev:api": "npm run dev --workspace @learning/fastify-api",
+    "dev:next": "npm run dev --workspace @learning/next-learning"
+  }
+}
